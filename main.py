@@ -25,7 +25,6 @@ def findPkgInManifest(pkg):
 def procDeps(deps):
     d = 0
     while d < len(deps):
-        tmp = ''.join(deps[d])
         found = findPkgInManifest(deps[d])
         if found == 1:
             deps.pop(d)
