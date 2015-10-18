@@ -32,8 +32,17 @@ def procDeps(deps):
         else:
             pkg = ''.join(deps[d])
             depsNext = getDeps(pkg)
+            procDeps(depsNext)
             if len(depsNext) > 0:
-                procDeps(depsNext)
+                i = 0
+                while i < len(depsNext):
+                    for item in deps:
+                        if item.find(''.join(depsNext[i])) != -1:
+                            depsNext.pop(i)
+                            break
+                    i = i + 1
+                for i in range(0,len(depsNext)):
+                    deps.append(depsNext[i])
             d = d + 1
 
 # MAIN
@@ -44,4 +53,6 @@ if len(sys.argv) == 1:
 pkg = str(sys.argv[1])
 deps = getDeps(pkg)
 procDeps(deps)
-print deps
+depsFile = open('/tmp/TMP/result.deps','w+')
+for item in deps:
+    depsFile.write("%s\n" % item)
