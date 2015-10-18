@@ -1,19 +1,20 @@
 #!/usr/bin/python
 import sys
+import linecache
 
 # return dependencies list for a given package
 def getDeps(package):
     with open('/tmp/TMP/Packages') as PackagesFile:
+        lDepPkgs = []
         for num, line in enumerate(PackagesFile, 1):
             line = line.rstrip()
             if "Package: " + package == line:
-                for numDepends, lineDepends in enumerate(PackagesFile,num):
-                    if "Depends" in lineDepends:
-                        tS = lineDepends.split(",")
-                        lDepPkgs = []
-                        for e in range(0,len(tS)):
-                            lDepPkgs.append(tS[e].split(" ")[1])
-                        return lDepPkgs
+                lineDepends = linecache.getline(PackagesFile.name,num+2)
+                if "Depends" in lineDepends:
+                    tS = lineDepends.split(",")
+                    for e in range(0,len(tS)):
+                        lDepPkgs.append(tS[e].split(" ")[1])
+        return lDepPkgs
 # scan manifest file for a given package
 def findPkgInManifest(pkg):
     with open('/tmp/TMP/manifest') as ManifestFile:
@@ -31,9 +32,8 @@ def procDeps(deps):
         else:
             pkg = ''.join(deps[d])
             depsNext = getDeps(pkg)
-            procDeps(depsNext)
-            if len(depsNext):
-                deps.append(depsNext)
+            if len(depsNext) > 0:
+                procDeps(depsNext)
             d = d + 1
 
 # MAIN
